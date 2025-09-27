@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mukuna Work Hours Tracker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">Mukuna Work Hours Tracker</h1>
+            <p class="subtitle">Track your productivity with style</p>
+        </div>
+
+        <div class="timer-section">
+            <div class="current-time" id="currentTime"></div>
+            <div class="timer-display" id="timerDisplay">00:00:00</div>
+            <div>
+                <button class="control-btn start-btn" id="startBtn">Start Work</button>
+                <button class="control-btn stop-btn btn-disabled" id="stopBtn" disabled>Stop Work</button>
+            </div>
+            <div id="statusIndicator">
+                <span class="status-indicator status-stopped"></span>
+                <span>Ready to work</span>
+            </div>
+        </div>
+
+        <div class="stats-section">
+            <h2 class="stats-header">Today's Stats</h2>
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <div class="stat-value" id="todayHours">0h</div>
+                    <div class="stat-label">Total Hours</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="sessionCount">0</div>
+                    <div class="stat-label">Sessions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="avgSession">0min</div>
+                    <div class="stat-label">Avg Session</div>
+                </div>
+            </div>
+
+            <div class="sessions-table">
+                <div class="table-header table-row">
+                    <div>Date</div>
+                    <div>Start Time</div>
+                    <div>End Time</div>
+                    <div>Duration</div>
+                </div>
+                <div id="sessionsTable">
+                    <div class="table-row" style="text-align: center; color: #666; font-style: italic;">
+                        <div style="grid-column: 1 / -1;">No sessions recorded yet</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

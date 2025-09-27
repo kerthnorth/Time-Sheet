@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mukuna Work Hours Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #4CAF50, #2196F3, #FF9800, #E91E63);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .timer-section {
+            text-align: center;
+            margin: 40px 0;
+            padding: 30px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            position: relative;
+        }
+
+        .current-time {
+            font-size: 1.2rem;
+            color: #555;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .timer-display {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #333;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .timer-display.active {
+            color: #4CAF50;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .control-btn {
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .start-btn {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .stop-btn {
+            background: linear-gradient(45deg, #f44336, #d32f2f);
+            color: white;
+            box-shadow: 0 5px 15px rgba(244, 67, 54, 0.3);
+        }
+
+        .stop-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(244, 67, 54, 0.4);
+        }
+
+        .btn-disabled {
+            background: #ccc !important;
+            cursor: not-allowed !important;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .stats-section {
+            margin-top: 40px;
+        }
+
+        .stats-header {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .sessions-table {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .table-header {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px;
+            font-weight: bold;
+        }
+
+        .table-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 10px;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.3s ease;
+        }
+
+        .table-row:hover {
+            background-color: #f8f9fa;
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-working {
+            background-color: #4CAF50;
+            animation: pulse 1s infinite;
+        }
+
+        .status-stopped {
+            background-color: #ccc;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .title {
+                font-size: 2rem;
+            }
+            
+            .timer-display {
+                font-size: 2rem;
+            }
+            
+            .control-btn {
+                padding: 12px 25px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">Mukuna Work Hours Tracker</h1>
+            <p class="subtitle">Track your productivity with style</p>
+        </div>
+
+        <div class="timer-section">
+            <div class="current-time" id="currentTime"></div>
+            <div class="timer-display" id="timerDisplay">00:00:00</div>
+            <div>
+                <button class="control-btn start-btn" id="startBtn" onclick="startWork()">Start Work</button>
+                <button class="control-btn stop-btn btn-disabled" id="stopBtn" onclick="stopWork()" disabled>Stop Work</button>
+            </div>
+            <div id="statusIndicator">
+                <span class="status-indicator status-stopped"></span>
+                <span>Ready to work</span>
+            </div>
+        </div>
+
+        <div class="stats-section">
+            <h2 class="stats-header">Today's Stats</h2>
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <div class="stat-value" id="todayHours">0h</div>
+                    <div class="stat-label">Total Hours</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="sessionCount">0</div>
+                    <div class="stat-label">Sessions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="avgSession">0min</div>
+                    <div class="stat-label">Avg Session</div>
+                </div>
+            </div>
+
+            <div class="sessions-table">
+                <div class="table-header table-row">
+                    <div>Date</div>
+                    <div>Start Time</div>
+                    <div>End Time</div>
+                    <div>Duration</div>
+                </div>
+                <div id="sessionsTable">
+                    <div class="table-row" style="text-align: center; color: #666; font-style: italic;">
+                        <div style="grid-column: 1 / -1;">No sessions recorded yet</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // In-memory database simulation
+        let workSessions = JSON.parse(localStorage.getItem('workSessions')) || [];
+        let currentSession = null;
+        let timerInterval = null;
+
+        function updateCurrentTime() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = 
+                now.toLocaleDateString() + ' - ' + now.toLocaleTimeString();
+        }
+
+        function formatTime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function formatDuration(milliseconds) {
+            const totalSeconds = Math.floor(milliseconds / 1000);
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            
+            if (hours > 0) {
+                return `${hours}h ${minutes}m`;
+            } else {
+                return `${minutes}m`;
+            }
+        }
+
+        function startWork() {
+            currentSession = {
+                startTime: new Date(),
+                endTime: null
+            };
+
+            // Update UI
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('startBtn').classList.add('btn-disabled');
+            document.getElementById('stopBtn').disabled = false;
+            document.getElementById('stopBtn').classList.remove('btn-disabled');
+            
+            const timerDisplay = document.getElementById('timerDisplay');
+            timerDisplay.classList.add('active');
+            
+            const statusIndicator = document.getElementById('statusIndicator');
+            statusIndicator.innerHTML = '<span class="status-indicator status-working"></span><span>Working...</span>';
+
+            // Start timer
+            let startTime = currentSession.startTime.getTime();
+            timerInterval = setInterval(() => {
+                const elapsed = Math.floor((new Date().getTime() - startTime) / 1000);
+                timerDisplay.textContent = formatTime(elapsed);
+            }, 1000);
+        }
+
+        function stopWork() {
+            if (!currentSession) return;
+
+            currentSession.endTime = new Date();
+            workSessions.push(currentSession);
+            
+            // Save to localStorage (simulating database)
+            localStorage.setItem('workSessions', JSON.stringify(workSessions));
+
+            // Clear timer
+            clearInterval(timerInterval);
+            
+            // Update UI
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('startBtn').classList.remove('btn-disabled');
+            document.getElementById('stopBtn').disabled = true;
+            document.getElementById('stopBtn').classList.add('btn-disabled');
+            
+            const timerDisplay = document.getElementById('timerDisplay');
+            timerDisplay.classList.remove('active');
+            timerDisplay.textContent = '00:00:00';
+            
+            const statusIndicator = document.getElementById('statusIndicator');
+            statusIndicator.innerHTML = '<span class="status-indicator status-stopped"></span><span>Ready to work</span>';
+
+            currentSession = null;
+            updateStats();
+            updateSessionsTable();
+        }
+
+        function updateStats() {
+            const today = new Date().toDateString();
+            const todaySessions = workSessions.filter(session => 
+                session.startTime && new Date(session.startTime).toDateString() === today
+            );
+
+            let totalHours = 0;
+            let totalMinutes = 0;
+
+            todaySessions.forEach(session => {
+                const start = new Date(session.startTime);
+                const end = new Date(session.endTime);
+                const duration = (end - start) / 1000 / 60; // in minutes
+                totalMinutes += duration;
+            });
+
+            totalHours = Math.floor(totalMinutes / 60);
+            const remainingMinutes = Math.floor(totalMinutes % 60);
+
+            document.getElementById('todayHours').textContent = 
+                totalHours > 0 ? `${totalHours}h ${remainingMinutes}m` : `${remainingMinutes}m`;
+            document.getElementById('sessionCount').textContent = todaySessions.length;
+            
+            const avgSession = todaySessions.length > 0 ? Math.floor(totalMinutes / todaySessions.length) : 0;
+            document.getElementById('avgSession').textContent = `${avgSession}min`;
+        }
+
+        function updateSessionsTable() {
+            const tableBody = document.getElementById('sessionsTable');
+            
+            if (workSessions.length === 0) {
+                tableBody.innerHTML = `
+                    <div class="table-row" style="text-align: center; color: #666; font-style: italic;">
+                        <div style="grid-column: 1 / -1;">No sessions recorded yet</div>
+                    </div>
+                `;
+                return;
+            }
+
+            tableBody.innerHTML = workSessions
+                .slice(-10) // Show last 10 sessions
+                .reverse()
+                .map(session => {
+                    const start = new Date(session.startTime);
+                    const end = session.endTime ? new Date(session.endTime) : null;
+                    const duration = end ? end - start : 0;
+
+                    return `
+                        <div class="table-row">
+                            <div>${start.toLocaleDateString()}</div>
+                            <div>${start.toLocaleTimeString()}</div>
+                            <div>${end ? end.toLocaleTimeString() : 'In progress'}</div>
+                            <div>${formatDuration(duration)}</div>
+                        </div>
+                    `;
+                }).join('');
+        }
+
+        // Initialize
+        updateCurrentTime();
+        setInterval(updateCurrentTime, 1000);
+        updateStats();
+        updateSessionsTable();
+    </script>
+</body>
+</html>

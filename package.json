@@ -1,0 +1,24 @@
+{
+  "name": "time-sheet",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kerthnorth/Time-Sheet.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kerthnorth/Time-Sheet/issues"
+  },
+  "homepage": "https://github.com/kerthnorth/Time-Sheet#readme",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
